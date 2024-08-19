@@ -39,8 +39,7 @@ RUN opentelemetry-bootstrap -a install
 COPY . .
 
 # Switch to the non-privileged user to run the application.
-USER appuser
 
 EXPOSE 8080
 
-CMD opentelemetry-instrument --logs_exporter otlp python3 app.py
+CMD bash -c "source new_relic_test.env && opentelemetry-instrument --logs_exporter otlp python3 app.py"
