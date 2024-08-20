@@ -7,9 +7,14 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
+from opentelemetry import metrics
+from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+
 # Service name is required for most backends
 resource = Resource(attributes = {
-    SERVICE_NAME: "getting-started-python-not-env"
+    SERVICE_NAME: 'getting-started-python-not-env'
 })
 
 traceProvider = TracerProvider(resource=resource)
@@ -19,6 +24,17 @@ trace.set_tracer_provider(traceProvider)
 
 # Creates a tracer from the global tracer provider
 tracer = trace.get_tracer("my.tracer.name")
+
+reader = PeriodicExportingMetricReader(OTLPMetricExporter())
+meterProvider = MeterProvider(resource=resource, metric_readers=[reader])
+metrics.set_meter_provider(meterProvider)
+
+# Creates a meter from the global meter provider
+meter = metrics.get_meter("my.meter.name")
+
+fib_counter = meter.create_counter(
+    "fib.counter", unit="1", description="Counts the amount of fibs done"
+)
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -31,6 +47,7 @@ def not_instrumented():
 @app.route("/fibonacci")
 @tracer.start_as_current_span("fibonacci")
 def fibonacci():
+    fib_counter.add(1)
     args = request.args
     x = int(args.get("n"))
 
