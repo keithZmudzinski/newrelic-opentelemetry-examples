@@ -15,15 +15,18 @@ resource = Resource(attributes = {
     SERVICE_NAME: 'getting-started-python-not-env'
 })
 
+# Add tracing.
 traceProvider = TracerProvider(resource=resource)
 processor = BatchSpanProcessor(OTLPSpanExporter())
 traceProvider.add_span_processor(processor)
 
+# Add metrics.
 reader = PeriodicExportingMetricReader(OTLPMetricExporter())
 meterProvider = MeterProvider(resource=resource, metric_readers=[reader])
 
 logging.basicConfig(level=logging.DEBUG)
 
+# Create and instrument app.
 app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app, tracer_provider=traceProvider, meter_provider=meterProvider)
 
