@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  nr-test:
+    image: nr-test
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./:/app
+    ports:
+      - 8080:8080
+      - 5678:5678
