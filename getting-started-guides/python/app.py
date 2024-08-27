@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Create and instrument app.
 app = Flask(__name__)
-instrument_telemetry(app)
+# instrument_telemetry(app)
 
 @app.route("/not_instrumented")
 def not_instrumented():
@@ -32,4 +32,4 @@ def fibonacci():
     logging.info("Compute fibonacci(" + str(x) + ") = " + str(array[x]))
     return jsonify(n=x, result=array[x])
 
-app.run(host='0.0.0.0', debug=True, port=8080)
+app.run(host='0.0.0.0', debug=False, port=8080)

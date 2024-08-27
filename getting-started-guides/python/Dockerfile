@@ -40,4 +40,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD bash -c "source new_relic_test.env && python3 app.py"
+CMD bash -c "source new_relic_test.env && opentelemetry-instrument python3 app.py"
